@@ -1,25 +1,48 @@
-import logo from './logo.svg';
+import React, { useState } from 'react';
+import PoemCard from './components/PoemCard';
+import PoemForm from './components/PoemForm';
 import './App.css';
 
-function App() {
+const App = () => {
+  const [poems, setPoems] = useState([]);
+  const [editingPoem, setEditingPoem] = useState(null);
+
+  const addPoem = (poem) => {
+    setPoems([...poems, { ...poem, id: Date.now() }]);
+  };
+
+  const updatePoem = (updatedPoem) => {
+    setPoems(poems.map((poem) => (poem.id === updatedPoem.id ? updatedPoem : poem)));
+    setEditingPoem(null);
+  };
+
+  const deletePoem = (id) => {
+    setPoems(poems.filter((poem) => poem.id !== id));
+  };
+
+  const editPoem = (poem) => {
+    setEditingPoem(poem);
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>Poema App</h1>
+      <PoemForm
+        onSubmit={editingPoem ? updatePoem : addPoem}
+        initialPoem={editingPoem}
+      />
+      <div className="poem-list">
+        {poems.map((poem) => (
+          <PoemCard
+            key={poem.id}
+            poem={poem}
+            onDelete={deletePoem}
+            onEdit={editPoem}
+          />
+        ))}
+      </div>
     </div>
   );
-}
+};
 
 export default App;
